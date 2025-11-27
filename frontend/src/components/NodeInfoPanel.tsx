@@ -422,15 +422,18 @@ export function NodeInfoPanel() {
     )
 
     const buildPath = (routeNums: number[], direction: 'forward' | 'back') => {
+      const startNode = direction === 'forward' ? myNode : selectedNode
+      const endNode = direction === 'forward' ? selectedNode : myNode
+
       const sequence: Array<{ node: typeof nodes[number] | null; role: TraceMapPoint['role'] }> = []
-      if (myNode) sequence.push({ node: myNode, role: 'source' })
+      sequence.push({ node: startNode || null, role: 'source' })
 
       for (const num of routeNums) {
         const hopNode = nodes.find((n) => n.num === num) || null
         sequence.push({ node: hopNode, role: 'hop' })
       }
 
-      sequence.push({ node: selectedNode, role: 'dest' })
+      sequence.push({ node: endNode || null, role: 'dest' })
 
       const points: TraceMapPoint[] = []
       const segments: TraceMapSegment[] = []
@@ -515,10 +518,8 @@ export function NodeInfoPanel() {
     }
 
     const forward = buildPath(tracerouteResult.route, 'forward')
-    const backNums = tracerouteResult.route_back?.length
-      ? tracerouteResult.route_back.slice().reverse()
-      : []
-    const back = backNums.length ? buildPath(backNums, 'back') : { points: [], segments: [], unknown: 0 }
+    const backNums = tracerouteResult.route_back || []
+    const back = buildPath(backNums, 'back')
 
     return {
       pointsForward: forward.points,

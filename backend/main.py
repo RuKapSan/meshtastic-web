@@ -195,8 +195,10 @@ async def traceroute(node_id: str, request: TracerouteRequest = TracerouteReques
                 logger.info("Traceroute send scheduled successfully")
         except asyncio.TimeoutError:
             logger.warning("Traceroute send timed out (background thread)")
+            mesh_manager.disconnect()
         except Exception as e:
             logger.error(f"Traceroute send failed: {e}")
+            mesh_manager.disconnect()
 
     asyncio.create_task(_send_traceroute_thread())
 
