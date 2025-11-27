@@ -76,26 +76,32 @@ export function useWebSocket() {
 
             const currentChat = store.currentChat
 
-            // Generate chat key for this message
-            let chatKey: string
-            let isCurrentChat = false
+            const isDM =
+              data.receiver && data.receiver !== '^all' && data.receiver !== 'broadcast'
+            const chatKey = isDM ? `dm:${data.sender}` : `channel:${data.channel}`
+            const isCurrentChat =
+              (isDM &&
+                currentChat?.type === 'dm' &&
+                currentChat.nodeId === data.sender) ||
+              (!isDM &&
+                currentChat?.type === 'channel' &&
+                currentChat.index === data.channel)
 
-            // Check if it's a DM: receiver is set AND NOT broadcast (^all or broadcast)
-            const isDM = data.receiver && data.receiver !== '^all' && data.receiver !== 'broadcast'
+            const myNodeId = store.status?.my_node_id
+            const isFromSelf = !!myNodeId && data.sender === myNodeId
 
-            if (isDM) {
-              // Direct message - use sender as chat key
-              chatKey = `dm:${data.sender}`
-              isCurrentChat = currentChat?.type === 'dm' && currentChat.nodeId === data.sender
-            } else {
-              // Channel/broadcast message - use channel index as chat key
-              chatKey = `channel:${data.channel}`
-              isCurrentChat = currentChat?.type === 'channel' && currentChat.index === data.channel
+            const isPageActive =
+              typeof document !== 'undefined'
+                ? document.visibilityState === 'visible' && document.hasFocus()
+                : true
+
+            const shouldMarkUnread = !isCurrentChat || !isPageActive
+
+            if (!isFromSelf && shouldMarkUnread) {
+              store.incrementUnreadForChat(chatKey)
             }
 
-            if (!isCurrentChat) {
-              store.incrementUnread()
-              store.incrementUnreadForChat(chatKey)
+            if (!isFromSelf) {
               playNotification()
             }
             break

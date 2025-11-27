@@ -46,6 +46,85 @@ export function Sidebar() {
     }
   }) : []
 
+  const getUnread = (nodeId: string) => getUnreadForChat(`dm:${nodeId}`)
+
+  const sortNodesByUnreadThenPreference = (list: typeof sortedNodes) => {
+    return [...list].sort((a, b) => {
+      const unreadA = getUnread(a.id)
+      const unreadB = getUnread(b.id)
+      if (unreadA !== unreadB) return unreadB - unreadA
+
+      if (sortBy === 'name') {
+        const nameA = getNodeName(a).toLowerCase()
+        const nameB = getNodeName(b).toLowerCase()
+        return nameA.localeCompare(nameB)
+      }
+
+      const timeA = a.lastHeard || 0
+      const timeB = b.lastHeard || 0
+      return timeB - timeA
+    })
+  }
+
+  const unreadNodes = sortNodesByUnreadThenPreference(
+    sortedNodes.filter((node) => getUnread(node.id) > 0)
+  )
+  const regularNodes = sortedNodes.filter((node) => getUnread(node.id) === 0)
+
+  const renderNodeButton = (node: (typeof sortedNodes)[number], unreadCount: number) => (
+    <button
+      key={node.id || node.num}
+      onClick={() => {
+        setSelectedNode(node)
+        setCurrentChat({
+          type: 'dm',
+          nodeId: node.id,
+          name: getNodeName(node),
+        })
+      }}
+      className={cn(
+        'w-full flex items-center gap-2 px-2 py-2 rounded-md text-sm hover:bg-accent transition-colors',
+        currentChat?.type === 'dm' &&
+          currentChat.nodeId === node.id &&
+          'bg-accent'
+      )}
+    >
+      <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+      <div className="flex-1 text-left min-w-0">
+        <div className="flex items-center gap-1.5">
+          <span className="truncate">{getNodeName(node)}</span>
+          {unreadCount > 0 && (
+            <span className="bg-primary text-primary-foreground text-xs font-medium px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center flex-shrink-0">
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span className="truncate">{node.id}</span>
+          {node.lastHeard && (
+            <span className="text-muted-foreground/60">
+              {formatLastHeard(node.lastHeard)}
+            </span>
+          )}
+        </div>
+      </div>
+      <div className="flex flex-col items-end gap-0.5 text-xs text-muted-foreground flex-shrink-0">
+        {node.deviceMetrics?.batteryLevel !== undefined && (
+          <span className="flex items-center">
+            <Battery className="w-3 h-3 mr-0.5" />
+            {node.deviceMetrics.batteryLevel}%
+          </span>
+        )}
+        {node.snr !== undefined && node.snr !== null && (
+          <span className="flex items-center">
+            <Signal className="w-3 h-3 mr-0.5" />
+            {node.snr.toFixed(1)}
+          </span>
+        )}
+      </div>
+    </button>
+  )
+
   return (
     <div className="w-72 bg-card border-r border-border flex flex-col h-full">
       <div className="p-4 border-b border-border">
@@ -133,64 +212,17 @@ export function Sidebar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            {sortedNodes?.map((node) => {
-              const chatKey = `dm:${node.id}`
-              const unreadCount = getUnreadForChat(chatKey)
 
-              return (
-                <button
-                  key={node.id || node.num}
-                  onClick={() => {
-                    setSelectedNode(node)
-                    setCurrentChat({
-                      type: 'dm',
-                      nodeId: node.id,
-                      name: getNodeName(node),
-                    })
-                  }}
-                  className={cn(
-                    'w-full flex items-center gap-2 px-2 py-2 rounded-md text-sm hover:bg-accent transition-colors',
-                    currentChat?.type === 'dm' &&
-                      currentChat.nodeId === node.id &&
-                      'bg-accent'
-                  )}
-                >
-                  <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                  <div className="flex-1 text-left min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="truncate">{getNodeName(node)}</span>
-                      {unreadCount > 0 && (
-                        <span className="bg-primary text-primary-foreground text-xs font-medium px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center flex-shrink-0">
-                          {unreadCount > 99 ? '99+' : unreadCount}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span className="truncate">{node.id}</span>
-                      {node.lastHeard && (
-                        <span className="text-muted-foreground/60">
-                          {formatLastHeard(node.lastHeard)}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-end gap-0.5 text-xs text-muted-foreground flex-shrink-0">
-                    {node.deviceMetrics?.batteryLevel !== undefined && (
-                      <span className="flex items-center">
-                        <Battery className="w-3 h-3 mr-0.5" />
-                        {node.deviceMetrics.batteryLevel}%
-                      </span>
-                    )}
-                    {node.snr !== undefined && node.snr !== null && (
-                      <span className="flex items-center">
-                        <Signal className="w-3 h-3 mr-0.5" />
-                        {node.snr.toFixed(1)}
-                      </span>
-                    )}
-                  </div>
-                </button>
-              )
-            })}
+            {unreadNodes.length > 0 && (
+              <div className="mb-2">
+                <div className="text-[11px] font-semibold text-primary uppercase px-2 py-1">
+                  Unread
+                </div>
+                {unreadNodes.map((node) => renderNodeButton(node, getUnread(node.id)))}
+              </div>
+            )}
+
+            {regularNodes.map((node) => renderNodeButton(node, getUnread(node.id)))}
           </div>
         </ScrollArea>
       )}

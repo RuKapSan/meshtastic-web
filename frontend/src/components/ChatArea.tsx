@@ -14,6 +14,11 @@ export function ChatArea() {
   const messages = useMeshStore((s) => s.messages)
   const status = useMeshStore((s) => s.status)
   const resetUnreadForChat = useMeshStore((s) => s.resetUnreadForChat)
+  const [isPageActive, setIsPageActive] = useState(() =>
+    typeof document !== 'undefined'
+      ? document.visibilityState === 'visible' && document.hasFocus()
+      : true
+  )
 
   const sendMessage = useSendMessage()
 
@@ -30,11 +35,29 @@ export function ChatArea() {
       : `dm:${currentChat.nodeId}`
     : ''
 
+  // Track page/tab visibility to decide when a message is actually read
   useEffect(() => {
-    if (!chatKey) return
+    const updateVisibility = () => {
+      const isVisible = document.visibilityState === 'visible' && document.hasFocus()
+      setIsPageActive(isVisible)
+    }
+
+    document.addEventListener('visibilitychange', updateVisibility)
+    window.addEventListener('focus', updateVisibility)
+    window.addEventListener('blur', updateVisibility)
+
+    return () => {
+      document.removeEventListener('visibilitychange', updateVisibility)
+      window.removeEventListener('focus', updateVisibility)
+      window.removeEventListener('blur', updateVisibility)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!chatKey || !isPageActive) return
 
     resetUnreadForChat(chatKey)
-  }, [chatKey, resetUnreadForChat])
+  }, [chatKey, isPageActive, resetUnreadForChat])
 
   // Filter messages for current chat
   const filteredMessages = messages.filter((m) => {

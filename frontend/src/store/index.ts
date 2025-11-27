@@ -89,20 +89,28 @@ export const useMeshStore = create<MeshState>((set, get) => ({
 
   unreadCount: 0,
   incrementUnread: () => set((state) => ({ unreadCount: state.unreadCount + 1 })),
-  resetUnread: () => set({ unreadCount: 0 }),
+  resetUnread: () => set({ unreadCount: 0, unreadPerChat: {} }),
 
   unreadPerChat: {},
   incrementUnreadForChat: (chatKey) =>
-    set((state) => ({
-      unreadPerChat: {
-        ...state.unreadPerChat,
-        [chatKey]: (state.unreadPerChat[chatKey] || 0) + 1,
-      },
-    })),
+    set((state) => {
+      const current = state.unreadPerChat[chatKey] || 0
+      return {
+        unreadPerChat: {
+          ...state.unreadPerChat,
+          [chatKey]: current + 1,
+        },
+        unreadCount: state.unreadCount + 1,
+      }
+    }),
   resetUnreadForChat: (chatKey) =>
     set((state) => {
+      const unreadForChat = state.unreadPerChat[chatKey] || 0
       const { [chatKey]: _, ...rest } = state.unreadPerChat
-      return { unreadPerChat: rest }
+      return {
+        unreadPerChat: rest,
+        unreadCount: Math.max(0, state.unreadCount - unreadForChat),
+      }
     }),
   getUnreadForChat: (chatKey: string): number => {
     return get().unreadPerChat[chatKey] || 0

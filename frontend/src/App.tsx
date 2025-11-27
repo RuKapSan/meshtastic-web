@@ -4,6 +4,7 @@ import { ChatArea } from '@/components/ChatArea'
 import { NodeInfoPanel } from '@/components/NodeInfoPanel'
 import { useWebSocket } from '@/hooks/useWebSocket'
 import { useMeshStore } from '@/store'
+import { useTitleNotifications } from '@/hooks/useTitleNotifications'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,6 +17,7 @@ const queryClient = new QueryClient({
 
 function AppContent() {
   useWebSocket()
+  useTitleNotifications()
   const selectedNode = useMeshStore((s) => s.selectedNode)
 
   return (
