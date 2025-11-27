@@ -37,6 +37,12 @@ interface MeshState {
   unreadCount: number
   incrementUnread: () => void
   resetUnread: () => void
+
+  // Unread messages per chat
+  unreadPerChat: Record<string, number>
+  incrementUnreadForChat: (chatKey: string) => void
+  resetUnreadForChat: (chatKey: string) => void
+  getUnreadForChat: (chatKey: string) => number
 }
 
 export const useMeshStore = create<MeshState>((set) => ({
@@ -84,4 +90,22 @@ export const useMeshStore = create<MeshState>((set) => ({
   unreadCount: 0,
   incrementUnread: () => set((state) => ({ unreadCount: state.unreadCount + 1 })),
   resetUnread: () => set({ unreadCount: 0 }),
+
+  unreadPerChat: {},
+  incrementUnreadForChat: (chatKey) =>
+    set((state) => ({
+      unreadPerChat: {
+        ...state.unreadPerChat,
+        [chatKey]: (state.unreadPerChat[chatKey] || 0) + 1,
+      },
+    })),
+  resetUnreadForChat: (chatKey) =>
+    set((state) => {
+      const { [chatKey]: _, ...rest } = state.unreadPerChat
+      return { unreadPerChat: rest }
+    }),
+  getUnreadForChat: (chatKey) => {
+    const state = useMeshStore.getState()
+    return state.unreadPerChat[chatKey] || 0
+  },
 }))

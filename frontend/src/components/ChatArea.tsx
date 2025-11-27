@@ -10,7 +10,10 @@ import { useSendMessage, useMessages } from '@/hooks/useApi'
 export function ChatArea() {
   const [text, setText] = useState('')
   const scrollRef = useRef<HTMLDivElement>(null)
-  const { currentChat, messages, status } = useMeshStore()
+  const currentChat = useMeshStore((s) => s.currentChat)
+  const messages = useMeshStore((s) => s.messages)
+  const status = useMeshStore((s) => s.status)
+  const resetUnreadForChat = useMeshStore((s) => s.resetUnreadForChat)
 
   const sendMessage = useSendMessage()
 
@@ -19,6 +22,17 @@ export function ChatArea() {
     currentChat?.type === 'channel' ? currentChat.index : undefined,
     currentChat?.type === 'dm' ? currentChat.nodeId : undefined
   )
+
+  // Reset unread count when opening a chat
+  useEffect(() => {
+    if (!currentChat) return
+
+    const chatKey = currentChat.type === 'channel'
+      ? `channel:${currentChat.index}`
+      : `dm:${currentChat.nodeId}`
+
+    resetUnreadForChat(chatKey)
+  }, [currentChat, resetUnreadForChat])
 
   // Filter messages for current chat
   const filteredMessages = messages.filter((m) => {

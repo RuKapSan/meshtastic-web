@@ -75,11 +75,24 @@ export function useWebSocket() {
             })
 
             const currentChat = store.currentChat
-            const isCurrentChat =
-              currentChat?.type === 'channel' && currentChat.index === data.channel
+
+            // Generate chat key for this message
+            let chatKey: string
+            let isCurrentChat = false
+
+            if (data.receiver && data.receiver !== 'broadcast') {
+              // Direct message
+              chatKey = `dm:${data.sender}`
+              isCurrentChat = currentChat?.type === 'dm' && currentChat.nodeId === data.sender
+            } else {
+              // Channel message
+              chatKey = `channel:${data.channel}`
+              isCurrentChat = currentChat?.type === 'channel' && currentChat.index === data.channel
+            }
 
             if (!isCurrentChat) {
               store.incrementUnread()
+              store.incrementUnreadForChat(chatKey)
               playNotification()
             }
             break

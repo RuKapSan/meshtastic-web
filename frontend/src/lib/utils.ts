@@ -7,7 +7,26 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatTime(timestamp: string | number): string {
   const date = new Date(typeof timestamp === 'number' ? timestamp * 1000 : timestamp)
-  return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+  const now = new Date()
+  const isToday = date.toDateString() === now.toDateString()
+
+  if (isToday) {
+    // Только время для сегодняшних сообщений
+    return date.toLocaleTimeString('ru-RU', {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    })
+  } else {
+    // Дата + время для старых сообщений
+    return date.toLocaleString('ru-RU', {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    })
+  }
 }
 
 export function formatDate(timestamp: string | number): string {
