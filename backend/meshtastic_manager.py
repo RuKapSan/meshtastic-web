@@ -387,17 +387,27 @@ class MeshtasticManager:
             return None
 
     def send_traceroute(self, dest: str, hop_limit: int = 7, channel_index: int = 0) -> bool:
+        """Send traceroute without blocking wait for response.
+
+        Uses low-level sendData instead of sendTraceRoute to avoid
+        the blocking waitForTraceRoute call that can hang indefinitely.
+        Response will arrive via _handle_traceroute_response callback.
+        """
         if not self.interface:
             return False
         try:
-            # Try with channelIndex first (supported in meshtastic 2.5.0+)
-            # Fall back to without channelIndex for older versions (2.3.4)
-            try:
-                self.interface.sendTraceRoute(dest=dest, hopLimit=hop_limit, channelIndex=channel_index)
-            except TypeError:
-                # channelIndex not supported in this version
-                logger.debug(f"channelIndex not supported, using default channel")
-                self.interface.sendTraceRoute(dest=dest, hopLimit=hop_limit)
+            from meshtastic import mesh_pb2, portnums_pb2
+
+            r = mesh_pb2.RouteDiscovery()
+            self.interface.sendData(
+                r,
+                destinationId=dest,
+                portNum=portnums_pb2.PortNum.TRACEROUTE_APP,
+                wantResponse=True,
+                channelIndex=channel_index,
+                hopLimit=hop_limit,
+            )
+            logger.info(f"Traceroute sent to {dest} (non-blocking)")
             return True
         except Exception as e:
             logger.error(f"Traceroute error: {e}")

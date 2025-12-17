@@ -190,43 +190,17 @@ async def traceroute(node_id: str, request: TracerouteRequest = TracerouteReques
     if not mesh_manager.connected:
         raise HTTPException(status_code=400, detail="Not connected")
 
-    logger.info(f"Traceroute request received for {node_id}")
+    logger.info(f"Traceroute request for {node_id}")
 
-    # Run traceroute in a detached daemon thread so it can't block event loop shutdown
-    import threading
+    success = mesh_manager.send_traceroute(
+        node_id,
+        request.hop_limit,
+        request.channel_index,
+    )
 
-    traceroute_done = threading.Event()
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to send traceroute")
 
-    def _worker():
-        try:
-            success = mesh_manager.send_traceroute(
-                node_id,
-                request.hop_limit,
-                request.channel_index,
-            )
-            if not success:
-                logger.error("Traceroute send returned False")
-            else:
-                logger.info("Traceroute send scheduled successfully")
-        except Exception as e:
-            logger.error(f"Traceroute send failed: {e}")
-        finally:
-            traceroute_done.set()
-
-    threading.Thread(target=_worker, daemon=True).start()
-
-    async def _watchdog():
-        for _ in range(60):
-            if traceroute_done.is_set():
-                return
-            await asyncio.sleep(1)
-        if not traceroute_done.is_set():
-            logger.warning("Traceroute send timed out (daemon thread) — disconnecting interface")
-            mesh_manager.disconnect()
-
-    asyncio.create_task(_watchdog())
-
-    logger.info(f"Traceroute request sent, waiting for response via WebSocket")
     return {"success": True, "message": "Traceroute initiated"}
 
 
