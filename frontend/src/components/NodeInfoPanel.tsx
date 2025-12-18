@@ -27,7 +27,7 @@ const OSM_RASTER_STYLE = {
       type: 'raster',
       source: 'osm'
     }
-  ]
+  ],
 } as const
 
 function formatCoord(value: number | undefined, digits = 5) {
@@ -180,10 +180,11 @@ function TraceRouteMap({
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
+    const firstWithCoords = points.find(p => p.hasCoords)
     const map = new MapLibreMap({
       container: containerRef.current,
       style: OSM_RASTER_STYLE as any,
-      center: points.length ? [points[0].lon, points[0].lat] : [0, 0],
+      center: firstWithCoords ? [firstWithCoords.lon, firstWithCoords.lat] : [0, 0],
       zoom: 8,
       interactive,
       attributionControl: showAttribution ? undefined : false,
@@ -284,6 +285,8 @@ function TraceRouteMap({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const labelMarkersRef = useRef<Marker[]>([])
+
   useEffect(() => {
     const map = mapRef.current
     if (!map) return
@@ -291,10 +294,32 @@ function TraceRouteMap({
     if (source?.setData) {
       source.setData(geoData)
     }
+
+    // Update markers for labels
+    labelMarkersRef.current.forEach((m) => m.remove())
+    labelMarkersRef.current = []
+
+    points.forEach((p) => {
+      if (!p.hasCoords) return
+      const el = document.createElement('div')
+      el.className = 'px-1.5 py-0.5 bg-white/90 rounded border border-white/50 shadow-sm text-[12px] font-medium text-slate-900 pointer-events-none whitespace-nowrap'
+      el.innerText = p.name
+
+      const marker = new Marker({
+        element: el,
+        anchor: 'bottom',
+        offset: [0, -12], // Position above the circle point
+      })
+        .setLngLat([p.lon, p.lat])
+        .addTo(map)
+
+      labelMarkersRef.current.push(marker)
+    })
+
     if (bounds) {
       map.fitBounds([bounds.sw, bounds.ne], { padding: 40, duration: 300 })
     }
-  }, [geoData, bounds, id])
+  }, [geoData, bounds, id, points])
 
   return <div ref={containerRef} className={cn('relative rounded-lg overflow-hidden', className)} />
 }
