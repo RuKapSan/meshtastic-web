@@ -653,7 +653,7 @@ export function NodeInfoPanel() {
   }
 
   return (
-    <div className="w-80 bg-card border-l border-border flex flex-col h-full">
+    <div className="w-[420px] bg-card border-l border-border flex flex-col h-full">
       <div className="h-14 px-4 border-b border-border flex items-center justify-between">
         <h2 className="font-semibold">Node Info</h2>
         <Button variant="ghost" size="icon" onClick={() => setSelectedNode(null)}>

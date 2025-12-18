@@ -85,14 +85,17 @@ export function Sidebar() {
       className={cn(
         'w-full flex items-center gap-2 px-2 py-2 rounded-md text-sm hover:bg-accent transition-colors',
         currentChat?.type === 'dm' &&
-          currentChat.nodeId === node.id &&
-          'bg-accent'
+        currentChat.nodeId === node.id &&
+        'bg-accent'
       )}
     >
       <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
       <div className="flex-1 text-left min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="truncate">{getNodeName(node)}</span>
+          <span className="truncate">
+            {getNodeName(node)}
+            {node.user?.shortName && <span className="ml-1 text-muted-foreground text-xs font-normal">({node.user.shortName})</span>}
+          </span>
           {unreadCount > 0 && (
             <span className="bg-primary text-primary-foreground text-xs font-medium px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center flex-shrink-0">
               {unreadCount > 99 ? '99+' : unreadCount}
@@ -126,7 +129,7 @@ export function Sidebar() {
   )
 
   return (
-    <div className="w-72 bg-card border-r border-border flex flex-col h-full">
+    <div className="w-[420px] bg-card border-r border-border flex flex-col h-full">
       <div className="p-4 border-b border-border">
         <div className="flex items-center gap-2">
           <Radio className="w-6 h-6 text-primary" />
@@ -160,8 +163,8 @@ export function Sidebar() {
                   className={cn(
                     'w-full flex items-center gap-2 px-2 py-2 rounded-md text-sm hover:bg-accent transition-colors',
                     currentChat?.type === 'channel' &&
-                      currentChat.index === channel.index &&
-                      'bg-accent'
+                    currentChat.index === channel.index &&
+                    'bg-accent'
                   )}
                 >
                   <Hash className="w-4 h-4 text-muted-foreground" />
