@@ -5,9 +5,11 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { MessageBubble } from './MessageBubble'
 import { ChatTabs } from './ChatTabs'
+import { DateDivider } from './DateDivider'
 import { useMeshStore } from '@/store'
 import { useSendMessage, useMessages } from '@/hooks/useApi'
 import { cn } from '@/lib/utils'
+import { isSameDay } from 'date-fns'
 import type { Message } from '@/types'
 
 export function ChatArea() {
@@ -84,37 +86,52 @@ export function ChatArea() {
   const EMOJI_ONLY_REGEX = /^(\p{Extended_Pictographic}|\p{Emoji_Presentation}|\s)+$/u
 
   const processedMessages = useMemo(() => {
-    const result: typeof messages = []
+    const result: (Message & {
+      showDateDivider?: boolean
+      isGroupStart?: boolean
+      isGroupEnd?: boolean
+    })[] = []
 
     // Sort by timestamp to ensure correct order
     const sorted = [...filteredMessages].sort((a, b) =>
       new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
     )
 
-    sorted.forEach((msg) => {
+    sorted.forEach((msg, idx) => {
       const isEmoji = EMOJI_ONLY_REGEX.test(msg.text.trim())
+      const prevMsg = idx > 0 ? sorted[idx - 1] : null
+      const nextMsg = idx < sorted.length - 1 ? sorted[idx + 1] : null
+
+      // Date Divider logic
+      const showDateDivider = !prevMsg || !isSameDay(new Date(msg.timestamp), new Date(prevMsg.timestamp))
+
+      // Grouping logic (same sender, within 5 minutes)
+      const isSameSenderAsPrev = prevMsg && prevMsg.sender === msg.sender && !EMOJI_ONLY_REGEX.test(prevMsg.text.trim())
+      const timeDiffPrev = prevMsg ? Math.abs(new Date(msg.timestamp).getTime() - new Date(prevMsg.timestamp).getTime()) : Infinity
+      const isGroupStart = showDateDivider || !isSameSenderAsPrev || timeDiffPrev > 5 * 60 * 1000
+
+      const isSameSenderAsNext = nextMsg && nextMsg.sender === msg.sender && !EMOJI_ONLY_REGEX.test(nextMsg.text.trim())
+      const timeDiffNext = nextMsg ? Math.abs(new Date(nextMsg.timestamp).getTime() - new Date(msg.timestamp).getTime()) : Infinity
+      const isGroupEnd = !isSameSenderAsNext || timeDiffNext > 5 * 60 * 1000
 
       if (isEmoji && result.length > 0) {
         // It's a reaction to the previous message
         const target = result[result.length - 1]
-
-        // Ensure reactions object exists (clone target first to avoid mutation)
-        // actually we can mutate the object in the result array since it's a shallow copy from our new array
         if (!target.reactions) target.reactions = {}
-
         const emoji = msg.text.trim()
-
-        // Clean up emoji (remove potential extra spaces)
-        // You might want to split if multiple emojis? For now assume single string is the reaction.
-        // If user sends "👍 ❤️", treating it as one reaction "👍 ❤️" is okay for now.
-
         if (!target.reactions[emoji]) target.reactions[emoji] = []
         if (!target.reactions[emoji].includes(msg.sender)) {
           target.reactions[emoji].push(msg.sender)
         }
       } else {
         // Regular message
-        result.push({ ...msg, reactions: {} })
+        result.push({
+          ...msg,
+          reactions: {},
+          showDateDivider,
+          isGroupStart,
+          isGroupEnd
+        })
       }
     })
 
@@ -209,19 +226,27 @@ export function ChatArea() {
 
       {/* Messages */}
       <ScrollArea className="flex-1 p-4" viewportRef={scrollViewportRef}>
-        {processedMessages.length === 0 ? (
-          <div className="text-center text-muted-foreground py-8">
-            No messages yet. Start the conversation!
-          </div>
-        ) : (
-          processedMessages.map((message) => (
-            <MessageBubble
-              key={message.packet_id || message.id}
-              message={message}
-              onReply={() => setReplyingTo(message)}
-            />
-          ))
-        )}
+        <div className="flex flex-col gap-1 min-h-full">
+          {processedMessages.length === 0 ? (
+            <div className="text-center text-muted-foreground py-8">
+              No messages yet. Start the conversation!
+            </div>
+          ) : (
+            processedMessages.map((message) => (
+              <div key={message.packet_id || message.id}>
+                {message.showDateDivider && (
+                  <DateDivider date={message.timestamp} />
+                )}
+                <MessageBubble
+                  message={message}
+                  onReply={() => setReplyingTo(message)}
+                  isGroupStart={message.isGroupStart}
+                  isGroupEnd={message.isGroupEnd}
+                />
+              </div>
+            ))
+          )}
+        </div>
       </ScrollArea>
 
       {/* Reply Preview */}

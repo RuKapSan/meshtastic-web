@@ -6,9 +6,11 @@ import { useMeshStore } from '@/store'
 interface Props {
   message: Message
   onReply?: () => void
+  isGroupStart?: boolean
+  isGroupEnd?: boolean
 }
 
-export function MessageBubble({ message, onReply }: Props) {
+export function MessageBubble({ message, onReply, isGroupStart = true, isGroupEnd = true }: Props) {
   const status = useMeshStore((s) => s.status)
   const nodes = useMeshStore((s) => s.nodes)
   const messages = useMeshStore((s) => s.messages)
@@ -33,16 +35,16 @@ export function MessageBubble({ message, onReply }: Props) {
   const AckIcon = () => {
     switch (message.ack_status) {
       case 'pending':
-        return <Clock className="w-3 h-3 text-muted-foreground" />
+        return <Clock className="w-2.5 h-2.5 opacity-60" />
       case 'ack':
-        return <CheckCheck className="w-3 h-3 text-green-500" />
+        return <CheckCheck className="w-3 h-3 text-blue-400" />
       case 'implicit_ack':
-        return <Check className="w-3 h-3 text-green-500" />
+        return <Check className="w-3 h-3 text-blue-400" />
       case 'nak':
       case 'failed':
-        return <X className="w-3 h-3 text-red-500" />
+        return <X className="w-3 h-3 text-red-400" />
       case 'received':
-        return <Check className="w-3 h-3 text-muted-foreground" />
+        return <Check className="w-3 h-3 opacity-60" />
       default:
         return null
     }
@@ -51,100 +53,126 @@ export function MessageBubble({ message, onReply }: Props) {
   return (
     <div
       className={cn(
-        'flex flex-col max-w-[85%] mb-2 group/bubble',
-        isOutgoing ? 'ml-auto items-end' : 'mr-auto items-start'
+        'flex flex-col max-w-[85%] group/bubble relative',
+        isOutgoing ? 'ml-auto items-end' : 'mr-auto items-start',
+        isGroupEnd ? 'mb-2' : 'mb-0.5'
       )}
     >
-      <div className="relative group flex items-start gap-2">
-        {!isOutgoing && onReply && (
+      <div className="relative group/content flex items-center gap-2">
+        {/* Reply button - for OUTGOING messages it appears on the LEFT (towards center) */}
+        {isOutgoing && onReply && (
           <button
             onClick={onReply}
-            className="opacity-0 group-hover/bubble:opacity-100 transition-opacity p-1.5 hover:bg-muted rounded-full mt-2 shrink-0"
+            className="opacity-0 group-hover/bubble:opacity-100 transition-opacity p-1 hover:bg-muted rounded-full shrink-0"
             title="Reply"
           >
-            <CornerUpLeft className="w-4 h-4 text-muted-foreground" />
+            <CornerUpLeft className="w-3.5 h-3.5 text-muted-foreground" />
           </button>
         )}
 
         <div
           className={cn(
-            'rounded-2xl px-3 py-2 break-words flex flex-col gap-1 shadow-sm border',
+            'px-3 py-1.5 break-words flex flex-col gap-0.5 shadow-sm transition-all',
             isOutgoing
-              ? 'bg-primary text-primary-foreground rounded-br-sm border-primary/50'
-              : 'bg-secondary text-secondary-foreground rounded-bl-sm border-border'
+              ? 'bg-primary text-primary-foreground border-primary/20'
+              : 'bg-secondary text-secondary-foreground border-border/40',
+            // Advanced border radius for grouping
+            isOutgoing
+              ? cn(
+                "rounded-2xl rounded-br-sm",
+                !isGroupStart && "rounded-tr-sm",
+                !isGroupEnd && "rounded-br-sm"
+              )
+              : cn(
+                "rounded-2xl rounded-bl-sm",
+                !isGroupStart && "rounded-tl-sm",
+                !isGroupEnd && "rounded-bl-sm"
+              )
           )}
         >
           {/* Reply Context */}
           {repliedMessage && (
             <div className={cn(
-              "mb-1 p-2 rounded-lg border-l-4 text-xs bg-black/5 flex flex-col gap-0.5 max-w-full overflow-hidden",
+              "mb-1 p-2 rounded-lg border-l-4 text-[11px] bg-black/5 flex flex-col gap-0.5 max-w-full overflow-hidden backdrop-blur-sm",
               isOutgoing ? "border-primary-foreground/30 text-primary-foreground/90" : "border-primary/50 text-muted-foreground"
             )}>
               <span className="font-bold opacity-80">
-                {getSenderName(repliedSenderNode, repliedMessage.sender)}
+                {getSenderName(repliedSenderNode, repliedSenderNode?.id || repliedMessage.sender)}
               </span>
-              <p className="truncate italic opacity-70">
+              <p className="truncate italic opacity-70 leading-tight">
                 {repliedMessage.text}
               </p>
             </div>
           )}
 
-          {/* Sender Header */}
-          <div className="flex items-center gap-1.5 opacity-90 mb-0.5">
-            {senderNode?.user?.shortName && (
-              <span className={cn(
-                "px-1 py-0 rounded border text-[9px] font-bold tracking-wider uppercase leading-tight",
-                isOutgoing ? "border-primary-foreground/30 bg-primary-foreground/10" : "border-foreground/20 bg-foreground/5"
-              )}>
-                {senderNode.user.shortName}
+          {/* Sender Header - only on Group Start */}
+          {isGroupStart && !isOutgoing && (
+            <div className="flex items-center gap-1.5 opacity-90 mb-0.5">
+              {senderNode?.user?.shortName && (
+                <span className={cn(
+                  "px-1 py-0 rounded border text-[10px] font-bold tracking-tight leading-tight",
+                  "border-foreground/20 bg-foreground/5"
+                )}>
+                  {senderNode.user.shortName}
+                </span>
+              )}
+              <span className="font-semibold text-[11px] truncate leading-tight text-primary/90">
+                {senderNode?.user?.longName || message.sender}
               </span>
-            )}
-            <span className="font-bold text-[11px] truncate leading-tight">
-              {isOutgoing ? 'You' : (senderNode?.user?.longName || message.sender)}
-            </span>
+            </div>
+          )}
+
+          <div className="flex flex-col min-w-[80px]">
+            <p className="text-[13px] leading-relaxed whitespace-pre-wrap">{message.text}</p>
+
+            <div className="flex items-end justify-between gap-2 mt-0.5">
+              {/* Reactions - Inside, Bottom Left */}
+              {message.reactions && Object.keys(message.reactions).length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {Object.entries(message.reactions).map(([emoji, senders]) => (
+                    <div
+                      key={emoji}
+                      className={cn(
+                        "rounded-full px-1.5 py-0.5 text-[15px] flex items-center gap-1 shadow-sm border border-black/5 transition-transform hover:scale-110 cursor-default",
+                        isOutgoing
+                          ? "bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30"
+                          : "bg-black/10 text-muted-foreground border-border/60"
+                      )}
+                      title={senders.join(', ')}
+                    >
+                      <span>{emoji}</span>
+                      {senders.length > 1 && (
+                        <span className="font-bold text-[10px] opacity-90">{senders.length}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Internal Timestamp & Ack - Bottom Right */}
+              <div className="flex items-center gap-1 ml-auto shrink-0 pb-0.5">
+                <span className={cn(
+                  "text-[9px] font-medium leading-none",
+                  isOutgoing ? "opacity-70" : "opacity-50"
+                )}>
+                  {formatTime(message.timestamp)}
+                </span>
+                {isOutgoing && <AckIcon />}
+              </div>
+            </div>
           </div>
-          <p className="text-sm whitespace-pre-wrap leading-snug">{message.text}</p>
         </div>
 
-        {isOutgoing && onReply && (
+        {/* Reply button - for INCOMING messages it appears on the RIGHT (towards center) */}
+        {!isOutgoing && onReply && (
           <button
             onClick={onReply}
-            className="opacity-0 group-hover/bubble:opacity-100 transition-opacity p-1.5 hover:bg-muted rounded-full mt-2 shrink-0 order-first"
+            className="opacity-0 group-hover/bubble:opacity-100 transition-opacity p-1 hover:bg-muted rounded-full shrink-0"
             title="Reply"
           >
-            <CornerUpLeft className="w-4 h-4 text-muted-foreground" />
+            <CornerUpLeft className="w-3.5 h-3.5 text-muted-foreground" />
           </button>
         )}
-
-        {/* Reactions - attached to bottom right */}
-        {message.reactions && Object.keys(message.reactions).length > 0 && (
-          <div className={cn(
-            "absolute -bottom-2 -right-3 flex flex-wrap gap-0.5 justify-end z-10",
-            isOutgoing ? "translate-y-1/2" : "translate-y-1/2"
-          )}>
-            {Object.entries(message.reactions).map(([emoji, senders]) => (
-              <div
-                key={emoji}
-                className="rounded-full px-1 py-0.5 text-lg flex items-center gap-0.5 cursor-default hover:scale-110 transition-transform"
-                title={senders.join(', ')}
-              >
-                <span>{emoji}</span>
-                {senders.length > 1 && (
-                  <span className="text-muted-foreground font-medium text-[10px]">
-                    {senders.length}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="flex items-center gap-1 px-1 mt-0.5">
-        <span className="text-xs text-muted-foreground">
-          {formatTime(message.timestamp)}
-        </span>
-        {isOutgoing && <AckIcon />}
       </div>
     </div>
   )

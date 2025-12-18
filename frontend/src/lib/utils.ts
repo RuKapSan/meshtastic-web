@@ -25,26 +25,11 @@ function parseTimestamp(timestamp: string | number): Date {
 
 export function formatTime(timestamp: string | number): string {
   const date = parseTimestamp(timestamp)
-  const now = new Date()
-  const isToday = date.toDateString() === now.toDateString()
-
-  if (isToday) {
-    // Только время для сегодняшних сообщений
-    return date.toLocaleTimeString('ru-RU', {
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
-    })
-  } else {
-    // Дата + время для старых сообщений
-    return date.toLocaleString('ru-RU', {
-      day: 'numeric',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
-    })
-  }
+  return date.toLocaleTimeString('ru-RU', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+  })
 }
 
 export function formatDate(timestamp: string | number): string {
