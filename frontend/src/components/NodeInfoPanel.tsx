@@ -1,4 +1,4 @@
-import { X, MapPin, Battery, Signal, Cpu, Route, Loader2, AlertCircle, Map as MapIcon } from 'lucide-react'
+import { X, MapPin, Battery, Signal, Cpu, Route, Loader2, AlertCircle, Map as MapIcon, MessageSquare } from 'lucide-react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -326,7 +326,7 @@ function TraceRouteMap({
 }
 
 export function NodeInfoPanel() {
-  const { selectedNode, setSelectedNode, tracerouteResult, setTracerouteResult, nodes, status } = useMeshStore()
+  const { selectedNode, setSelectedNode, tracerouteResult, setTracerouteResult, nodes, status, setActiveTab } = useMeshStore()
   const traceroute = useTraceroute()
   const [tracerouteTimeout, setTracerouteTimeout] = useState(false)
   const [tracerouteCountdown, setTracerouteCountdown] = useState(60)
@@ -754,7 +754,20 @@ export function NodeInfoPanel() {
         )}
 
         {/* Traceroute */}
-        <div className="mb-4">
+        <div className="mb-4 space-y-3">
+          <Button
+            onClick={() => {
+              if (selectedNode.id) {
+                setActiveTab({ type: 'dm', nodeId: selectedNode.id, name: getNodeName(selectedNode) })
+              }
+            }}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+            size="lg"
+          >
+            <MessageSquare className="w-5 h-5 mr-2" />
+            Открыть чат
+          </Button>
+
           <Button
             onClick={handleTraceroute}
             disabled={traceroute.isPending}

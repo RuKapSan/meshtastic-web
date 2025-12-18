@@ -16,7 +16,7 @@ import { cn, getNodeName } from '@/lib/utils'
 type SortType = 'name' | 'lastHeard'
 
 export function Sidebar() {
-  const { currentChat, setActiveTab, setSelectedNode, status, getUnreadForChat } = useMeshStore()
+  const { currentChat, setActiveTab, setSelectedNode, selectedNode, status, getUnreadForChat } = useMeshStore()
   const { data: nodes } = useNodes()
   const { data: channels } = useChannels()
   const [sortBy, setSortBy] = useState<SortType>('name')
@@ -76,16 +76,10 @@ export function Sidebar() {
       key={node.id || node.num}
       onClick={() => {
         setSelectedNode(node)
-        setActiveTab({
-          type: 'dm',
-          nodeId: node.id,
-          name: getNodeName(node),
-        })
       }}
       className={cn(
         'w-full flex items-center gap-2 px-2 py-2 rounded-md text-sm hover:bg-accent transition-colors',
-        currentChat?.type === 'dm' &&
-        currentChat.nodeId === node.id &&
+        ((currentChat?.type === 'dm' && currentChat.nodeId === node.id) || selectedNode?.id === node.id) &&
         'bg-accent'
       )}
     >
