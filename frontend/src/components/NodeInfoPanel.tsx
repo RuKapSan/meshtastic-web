@@ -222,7 +222,6 @@ function TraceRouteMap({
           'line-color': '#16a34a',
           'line-width': 3,
           'line-opacity': 0.7,
-          'line-dasharray': [2, 2],
         },
       })
 
@@ -850,7 +849,7 @@ export function NodeInfoPanel() {
                         <span className="inline-block w-3 h-1.5 bg-blue-600 rounded-sm" /> прямой маршрут
                       </span>
                       <span className="inline-flex items-center gap-1">
-                        <span className="inline-block w-3 h-1.5 bg-green-600 rounded-sm border border-border" /> обратный маршрут (пунктир)
+                        <span className="inline-block w-3 h-1.5 bg-green-600 rounded-sm border border-border" /> обратный маршрут
                       </span>
                       {traceMapData.segments.some((s) => s.approximate) && (
                         <span className="inline-flex items-center gap-1">
@@ -965,8 +964,8 @@ export function NodeInfoPanel() {
 
                   <Dialog.Root open={isTraceMapOpen} onOpenChange={setIsTraceMapOpen}>
                     <Dialog.Portal>
-                      <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-                      <Dialog.Content className="fixed left-1/2 top-1/2 w-[92vw] max-w-5xl -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-card p-4 shadow-xl border border-border focus:outline-none">
+                      <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
+                      <Dialog.Content className="fixed left-1/2 top-1/2 w-[92vw] max-w-5xl -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-card p-4 shadow-xl border border-border focus:outline-none z-50">
                         <Dialog.Title className="sr-only">Маршрут сообщения</Dialog.Title>
                         <Dialog.Description className="sr-only">
                           Отображение маршрута трассировки на карте
@@ -1024,7 +1023,7 @@ export function NodeInfoPanel() {
                               <span className="inline-block w-3 h-1.5 bg-blue-600 rounded-sm" /> прямой маршрут
                             </span>
                             <span className="inline-flex items-center gap-1">
-                              <span className="inline-block w-3 h-1.5 bg-green-600 rounded-sm border border-border" /> обратный маршрут (пунктир)
+                              <span className="inline-block w-3 h-1.5 bg-green-600 rounded-sm border border-border" /> обратный маршрут
                             </span>
                             {traceMapData.segments.some((s) => s.approximate) && (
                               <span className="inline-flex items-center gap-1">
