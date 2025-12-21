@@ -2,7 +2,10 @@
 
 # 📡 MeshRadar
 
-**Современный веб-интерфейс для управления Meshtastic mesh-сетью**
+**Modern web interface for Meshtastic mesh network management**
+
+[![English](https://img.shields.io/badge/lang-English-blue.svg)](README.md)
+[![Русский](https://img.shields.io/badge/lang-Русский-red.svg)](README.ru.md)
 
 ![hero](assets/hero.jpg)
 
@@ -11,40 +14,40 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-[Возможности](#-возможности) • [Быстрый старт](#-быстрый-старт) • [API](#-api) • [Технологии](#-технологии)
+[Features](#-features) • [Quick Start](#-quick-start) • [API](#-api) • [Technologies](#-technologies)
 
 </div>
 
 ---
 
-## 📸 Интерфейс
+## 📸 Interface
 
 ![interface](assets/interface.jpg)
 
 ---
 
-## ✨ Возможности
+## ✨ Features
 
-| Функция | Описание |
-|---------|----------|
-| 🔌 **Подключение** | Serial (USB) и TCP (WiFi) к Meshtastic нодам |
-| 💬 **Чат** | Каналы и личные сообщения с подтверждением доставки (✓ ✓✓) |
-| 📊 **Список нод** | Все ноды в mesh с телеметрией (батарея, SNR, позиция) |
-| 🗺️ **Карта сети** | Визуализация всех нод на интерактивной карте |
-| 🛤️ **Traceroute** | Визуализация маршрута сообщений между нодами |
-| 💾 **История** | Сообщения сохраняются в SQLite |
-| ⚡ **Real-time** | WebSocket для мгновенных обновлений |
-| 🌍 **Мультиязычность** | Русский и English с переключателем |
+| Feature | Description |
+|---------|-------------|
+| 🔌 **Connection** | Serial (USB) and TCP (WiFi) to Meshtastic nodes |
+| 💬 **Chat** | Channels and direct messages with delivery confirmation (✓ ✓✓) |
+| 📊 **Node List** | All mesh nodes with telemetry (battery, SNR, position) |
+| 🗺️ **Network Map** | Interactive map visualization of all nodes |
+| 🛤️ **Traceroute** | Message route visualization between nodes |
+| 💾 **History** | Messages stored in SQLite database |
+| ⚡ **Real-time** | WebSocket for instant updates |
+| 🌍 **Multilingual** | Russian and English with switcher |
 
 ---
 
-## 🚀 Быстрый старт
+## 🚀 Quick Start
 
-### Требования
+### Requirements
 
 - Python 3.10+
 - Node.js 18+
-- Meshtastic нода (опционально для тестирования UI)
+- Meshtastic node (optional for UI testing)
 
 ### Backend
 
@@ -56,7 +59,7 @@ pip install -r requirements.txt
 python main.py
 ```
 
-> Backend запустится на http://localhost:8000
+> Backend will start at http://localhost:8000
 
 ### Frontend
 
@@ -66,20 +69,20 @@ npm install
 npm run dev
 ```
 
-> Frontend запустится на http://localhost:5173
+> Frontend will start at http://localhost:5173
 
 ---
 
-## 📦 Портативная версия
+## 📦 Portable Version
 
-Для сборки автономного `.exe` файла:
+To build a standalone `.exe` file:
 
 ```bash
-# Запустите в корне проекта
+# Run in project root
 build.bat
 ```
 
-Готовый файл: `dist/MeshRadar.exe`
+Output file: `dist/MeshRadar.exe`
 
 ---
 
@@ -87,25 +90,25 @@ build.bat
 
 ### REST Endpoints
 
-| Method | Endpoint | Описание |
-|--------|----------|----------|
-| `POST` | `/api/connect` | Подключение к ноде |
-| `POST` | `/api/disconnect` | Отключение |
-| `GET` | `/api/status` | Статус подключения |
-| `GET` | `/api/nodes` | Список нод |
-| `GET` | `/api/node/{id}` | Информация о ноде |
-| `GET` | `/api/channels` | Список каналов |
-| `POST` | `/api/message` | Отправить сообщение |
-| `POST` | `/api/traceroute/{id}` | Traceroute до ноды |
-| `GET` | `/api/messages` | История сообщений |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/connect` | Connect to node |
+| `POST` | `/api/disconnect` | Disconnect |
+| `GET` | `/api/status` | Connection status |
+| `GET` | `/api/nodes` | List of nodes |
+| `GET` | `/api/node/{id}` | Node information |
+| `GET` | `/api/channels` | List of channels |
+| `POST` | `/api/message` | Send message |
+| `POST` | `/api/traceroute/{id}` | Traceroute to node |
+| `GET` | `/api/messages` | Message history |
 
 ### WebSocket Events
 
 ```typescript
-// Подключение
+// Connection
 ws://localhost:8000/ws
 
-// События (server → client)
+// Events (server → client)
 { type: "connection_status", data: { connected: boolean, ... } }
 { type: "message", data: { sender, text, channel, ... } }
 { type: "ack", data: { packet_id, status: "ack"|"nak" } }
@@ -114,23 +117,23 @@ ws://localhost:8000/ws
 ```
 
 <details>
-<summary><b>📝 Примеры использования API</b></summary>
+<summary><b>📝 API Usage Examples</b></summary>
 
-**Подключение по TCP:**
+**TCP Connection:**
 ```bash
 curl -X POST http://localhost:8000/api/connect \
   -H "Content-Type: application/json" \
   -d '{"type": "tcp", "address": "192.168.1.100:4403"}'
 ```
 
-**Подключение по Serial:**
+**Serial Connection:**
 ```bash
 curl -X POST http://localhost:8000/api/connect \
   -H "Content-Type: application/json" \
   -d '{"type": "serial", "address": "/dev/ttyUSB0"}'
 ```
 
-**Отправка сообщения:**
+**Send Message:**
 ```bash
 curl -X POST http://localhost:8000/api/message \
   -H "Content-Type: application/json" \
@@ -141,7 +144,7 @@ curl -X POST http://localhost:8000/api/message \
 
 ---
 
-## 🛠 Технологии
+## 🛠 Technologies
 
 <table>
 <tr>
@@ -149,7 +152,7 @@ curl -X POST http://localhost:8000/api/message \
 
 ### Backend
 - **FastAPI** — async web framework
-- **meshtastic** — Python библиотека
+- **meshtastic** — Python library
 - **aiosqlite** — async SQLite
 - **websockets** — real-time
 
@@ -158,9 +161,9 @@ curl -X POST http://localhost:8000/api/message \
 
 ### Frontend
 - **React 18** + TypeScript
-- **Tailwind CSS** — стилизация
+- **Tailwind CSS** — styling
 - **Zustand** — state management
-- **Radix UI** — accessible компоненты
+- **Radix UI** — accessible components
 
 </td>
 </tr>
@@ -168,40 +171,40 @@ curl -X POST http://localhost:8000/api/message \
 
 ---
 
-## 📁 Структура проекта
+## 📁 Project Structure
 
 ```
 meshradar/
 ├── backend/
-│   ├── main.py              # FastAPI приложение
-│   ├── meshtastic_manager.py # Управление подключением
+│   ├── main.py              # FastAPI application
+│   ├── meshtastic_manager.py # Connection management
 │   ├── websocket_manager.py  # WebSocket broadcast
-│   ├── database.py          # SQLite операции
-│   └── schemas.py           # Pydantic модели
+│   ├── database.py          # SQLite operations
+│   └── schemas.py           # Pydantic models
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── components/      # React компоненты
+│   │   ├── components/      # React components
 │   │   ├── hooks/           # React hooks
 │   │   ├── store/           # Zustand state
-│   │   └── locales/         # i18n переводы
+│   │   └── locales/         # i18n translations
 │   └── package.json
 │
-└── assets/                  # Изображения для README
+└── assets/                  # README images
 ```
 
 ---
 
-## 👨‍💻 Разработка
+## 👨‍💻 Development
 
 ```bash
-# Backend с hot-reload
+# Backend with hot-reload
 cd backend && uvicorn main:app --reload
 
-# Frontend с hot-reload
+# Frontend with hot-reload
 cd frontend && npm run dev
 
-# Build для production
+# Production build
 cd frontend && npm run build
 ```
 
