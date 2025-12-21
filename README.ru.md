@@ -14,6 +14,10 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
+### 📥 Скачать последнюю версию
+
+[![Скачать MeshRadar](https://img.shields.io/badge/Скачать-MeshRadar.exe-brightgreen?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/curlysasha/meshtastic-web/releases/latest)
+
 [Возможности](#-возможности) • [Быстрый старт](#-быстрый-старт) • [API](#-api) • [Технологии](#-технологии)
 
 </div>
@@ -23,6 +27,10 @@
 ## 📸 Интерфейс
 
 ![interface](assets/interface.jpg)
+
+### Визуализация трассировки
+
+![traceroute](assets/traceroute.jpg)
 
 ---
 
