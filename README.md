@@ -230,6 +230,19 @@ This project is licensed under GPLv3 with Commons Clause - see the [LICENSE](LIC
 
 ---
 
+## 💝 Support the Project
+
+If you find MeshRadar useful, please consider supporting its development:
+
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/meshradar)
+[![Boosty](https://img.shields.io/badge/Boosty-Support-F15F2C?style=for-the-badge)](https://boosty.to/curlysasha)
+
+**Crypto donations:**
+- **USDT TRC20**: `TL2rEf6iNzhC9Mb2grm6S5iq5JrMxYDEZG`
+- **USDT TON**: `UQDyYPHzm6tb4KbpLIMo-KEWC2PmPHnU2Zj4tndLg9O70-w8`
+
+---
+
 **Made with ❤️ for Meshtastic community**
 
 </div>

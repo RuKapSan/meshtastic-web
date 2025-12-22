@@ -227,6 +227,19 @@ GPLv3 + Commons Clause © 2024
 Проект распространяется под лицензией GPLv3 с Commons Clause - подробности в файле [LICENSE](LICENSE).
 
 > **Примечание**: Commons Clause означает, что вы можете свободно использовать, изменять и распространять это ПО, но не можете продавать его или предлагать как платную услугу.
+
+---
+
+## 💝 Поддержать проект
+
+Если MeshRadar оказался полезным, вы можете поддержать его развитие:
+
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Поддержать-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/meshradar)
+[![Boosty](https://img.shields.io/badge/Boosty-Поддержать-F15F2C?style=for-the-badge)](https://boosty.to/curlysasha)
+
+**Криптовалюта:**
+- **USDT TRC20**: `TL2rEf6iNzhC9Mb2grm6S5iq5JrMxYDEZG`
+- **USDT TON**: `UQDyYPHzm6tb4KbpLIMo-KEWC2PmPHnU2Zj4tndLg9O70-w8`
  License © 2024
 
 ---
