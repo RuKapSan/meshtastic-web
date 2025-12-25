@@ -3,16 +3,16 @@ services:
     build: .
     container_name: meshradar
     ports:
-      - "5173:80"  
+      - "5173:80"
     volumes:
-      - meshradar_data:/app/backend/data  
-    devices:  
-      - ${MESHTASTIC_DEVICE}:*:/dev/ttyUSB1
-    privileged: true  
+      - meshradar_data:/app/backend/data
     environment:
-      # - LOG_LEVEL=INFO, пока не добавлено в код
-      - DATABASE_PATH=${DATABASE_PATH}
+      - DATABASE_PATH=${DATABASE_PATH:-/app/backend/data/meshradar.db}
     restart: unless-stopped
+    # To use USB device connection, uncomment the lines below and set your device path:
+    # devices:
+    #   - /dev/ttyUSB0:/dev/ttyUSB0
+    # privileged: true
 
 
 volumes:
