@@ -322,7 +322,8 @@ class MeshtasticManager:
             "position": deep_convert(position),
             "snr": node.get("snr"),
             "lastHeard": node.get("lastHeard"),
-            "deviceMetrics": deep_convert(device_metrics)
+            "deviceMetrics": deep_convert(device_metrics),
+            "isFavorite": node.get("isFavorite", False)
         }
 
     def get_nodes(self) -> list:
@@ -422,6 +423,35 @@ class MeshtasticManager:
             return True
         except Exception as e:
             logger.error(f"Traceroute error: {e}")
+            return False
+
+    def set_favorite(self, node_id: str, is_favorite: bool) -> bool:
+        """Set favorite status for a node.
+
+        Args:
+            node_id: Node ID in format "!12345678"
+            is_favorite: True to mark as favorite, False to unmark
+
+        Returns:
+            True if successful, False otherwise
+        """
+        if not self.interface:
+            logger.error("Not connected to device")
+            return False
+
+        try:
+            # Get the node number from ID (remove "!" prefix)
+            if node_id.startswith("!"):
+                node_num = int(node_id[1:], 16)
+            else:
+                node_num = int(node_id, 16)
+
+            # Call meshtastic setFavorite method
+            self.interface.setFavorite(node_num, is_favorite)
+            logger.info(f"Set favorite={is_favorite} for node {node_id}")
+            return True
+        except Exception as e:
+            logger.error(f"Error setting favorite: {e}")
             return False
 
     def get_status(self) -> dict:

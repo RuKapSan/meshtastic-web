@@ -6,7 +6,7 @@ import os
 import webbrowser
 from pathlib import Path
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -210,6 +210,20 @@ async def traceroute(node_id: str, request: TracerouteRequest = TracerouteReques
         raise HTTPException(status_code=500, detail="Failed to send traceroute")
 
     return {"success": True, "message": "Traceroute initiated"}
+
+
+@app.post("/api/node/{node_id}/favorite")
+async def set_favorite(node_id: str, is_favorite: bool = Query(...)):
+    """Set favorite status for a node."""
+    if not mesh_manager.connected:
+        raise HTTPException(status_code=400, detail="Not connected")
+
+    success = mesh_manager.set_favorite(node_id, is_favorite)
+
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to set favorite")
+
+    return {"success": True, "node_id": node_id, "is_favorite": is_favorite}
 
 
 @app.get("/api/messages")

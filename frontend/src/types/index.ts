@@ -21,6 +21,7 @@ export interface Node {
     channelUtilization: number
     airUtilTx: number
   }
+  isFavorite?: boolean
 }
 
 export interface Channel {

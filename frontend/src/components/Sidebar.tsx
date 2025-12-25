@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Hash, User, Battery, Signal, ArrowUpDown, Search, X, Globe, Check } from 'lucide-react'
+import { Hash, User, Battery, Signal, ArrowUpDown, Search, X, Globe, Check, Star } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Button } from '@/components/ui/button'
@@ -47,6 +47,12 @@ export function Sidebar() {
       return name.includes(query) || shortName.includes(query) || id.includes(query)
     })
     .sort((a, b) => {
+      // First sort by favorite status (favorites always on top)
+      if (a.isFavorite !== b.isFavorite) {
+        return (b.isFavorite ? 1 : 0) - (a.isFavorite ? 1 : 0)
+      }
+
+      // Then sort by name or lastHeard
       if (sortBy === 'name') {
         const nameA = getNodeName(a).toLowerCase()
         const nameB = getNodeName(b).toLowerCase()
@@ -78,7 +84,11 @@ export function Sidebar() {
         'bg-accent'
       )}
     >
-      <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+      {node.isFavorite ? (
+        <Star className="w-4 h-4 fill-yellow-500 text-yellow-500 flex-shrink-0" />
+      ) : (
+        <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+      )}
       <div className="flex-1 text-left min-w-0">
         <div className="flex items-center gap-1.5">
           <span className="truncate">

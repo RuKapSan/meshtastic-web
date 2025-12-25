@@ -1,10 +1,10 @@
-import { X, MapPin, Battery, Signal, Cpu, Route, Loader2, AlertCircle, Map as MapIcon, MessageSquare, Maximize2, Zap, Activity, HardDrive } from 'lucide-react'
+import { X, MapPin, Battery, Signal, Cpu, Route, Loader2, AlertCircle, Map as MapIcon, MessageSquare, Maximize2, Zap, Activity, HardDrive, Star } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import * as Dialog from '@radix-ui/react-dialog'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useMeshStore } from '@/store'
-import { useTraceroute } from '@/hooks/useApi'
+import { useTraceroute, useSetFavorite } from '@/hooks/useApi'
 import { cn, getNodeName } from '@/lib/utils'
 import { useEffect, useMemo, useRef, useState, useId } from 'react'
 import { Map as MapLibreMap, NavigationControl, Marker } from 'maplibre-gl'
@@ -457,6 +457,7 @@ export function NodeInfoPanel() {
   } = useMeshStore()
   const { t } = useTranslation()
   const traceroute = useTraceroute()
+  const setFavoriteMutation = useSetFavorite()
   const [tracerouteTimeout, setTracerouteTimeout] = useState(false)
   const [tracerouteCountdown, setTracerouteCountdown] = useState(60)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -805,9 +806,31 @@ export function NodeInfoPanel() {
           </>
         )}
       </div>
-      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={handleClose}>
-        <X className="w-4 h-4" />
-      </Button>
+      <div className="flex items-center gap-1">
+        {selectedNode && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-full hover:bg-yellow-500/10"
+            onClick={() => {
+              if (selectedNode.id) {
+                setFavoriteMutation.mutate({
+                  nodeId: selectedNode.id,
+                  isFavorite: !selectedNode.isFavorite
+                })
+              }
+            }}
+            title={selectedNode.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <Star
+              className={`w-4 h-4 ${selectedNode.isFavorite ? 'fill-yellow-500 text-yellow-500' : 'text-muted-foreground'}`}
+            />
+          </Button>
+        )}
+        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={handleClose}>
+          <X className="w-4 h-4" />
+        </Button>
+      </div>
     </div>
   )
 
@@ -955,14 +978,33 @@ export function NodeInfoPanel() {
   // Final check for selectedNode before rendering details
   if (!selectedNode) return null
 
-
   return (
     <div className="w-[360px] bg-card border-l border-border flex flex-col h-full">
       <div className="h-14 px-4 border-b border-border flex items-center justify-between">
         <h2 className="font-semibold">{t('nodeInfo.title')}</h2>
-        <Button variant="ghost" size="icon" onClick={() => setSelectedNode(null)}>
-          <X className="w-4 h-4" />
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-full hover:bg-yellow-500/10"
+            onClick={() => {
+              if (selectedNode.id) {
+                setFavoriteMutation.mutate({
+                  nodeId: selectedNode.id,
+                  isFavorite: !selectedNode.isFavorite
+                })
+              }
+            }}
+            title={selectedNode.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <Star
+              className={`w-4 h-4 ${selectedNode.isFavorite ? 'fill-yellow-500 text-yellow-500' : 'text-muted-foreground'}`}
+            />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => setSelectedNode(null)}>
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
 
       <ScrollArea className="flex-1 p-4">

@@ -147,3 +147,17 @@ export function useTraceroute() {
       fetchApi<{ success: boolean }>(`/traceroute/${nodeId}`, { method: 'POST' }),
   })
 }
+
+export function useSetFavorite() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ nodeId, isFavorite }: { nodeId: string; isFavorite: boolean }) =>
+      fetchApi<{ success: boolean }>(`/node/${nodeId}/favorite?is_favorite=${isFavorite}`, {
+        method: 'POST',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['nodes'] })
+    },
+  })
+}
