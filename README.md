@@ -14,7 +14,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![License](https://img.shields.io/badge/License-GPLv3%20%2B%20Commons%20Clause-blue?style=for-the-badge)](LICENSE)
 
-### 📥 Download Latest Release
+### 📥 Download Latest Release for Windows
 
 [![Download MeshRadar](https://img.shields.io/badge/Download-MeshRadar.exe-brightgreen?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/curlysasha/meshtastic-web/releases/latest)
 
@@ -287,3 +287,4 @@ If you find MeshRadar useful, please consider supporting its development:
 **Made with ❤️ for Meshtastic community**
 
 </div>
+
