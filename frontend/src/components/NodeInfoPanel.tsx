@@ -820,7 +820,7 @@ export function NodeInfoPanel() {
                 })
               }
             }}
-            title={selectedNode.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            title={selectedNode.isFavorite ? t('nodeInfo.removeFromFavorites') : t('nodeInfo.addToFavorites')}
           >
             <Star
               className={`w-4 h-4 ${selectedNode.isFavorite ? 'fill-yellow-500 text-yellow-500' : 'text-muted-foreground'}`}
@@ -995,7 +995,7 @@ export function NodeInfoPanel() {
                 })
               }
             }}
-            title={selectedNode.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            title={selectedNode.isFavorite ? t('nodeInfo.removeFromFavorites') : t('nodeInfo.addToFavorites')}
           >
             <Star
               className={`w-4 h-4 ${selectedNode.isFavorite ? 'fill-yellow-500 text-yellow-500' : 'text-muted-foreground'}`}
@@ -1231,28 +1231,28 @@ export function NodeInfoPanel() {
                     </div>
                   )}
                   <div className="text-xs text-muted-foreground flex flex-wrap gap-4">
-                    <span>Вперёд: {formatKm(traceMapData.distance.forward)}</span>
-                    <span>Назад: {traceMapData.distance.back ? formatKm(traceMapData.distance.back) : '—'}</span>
-                    <span className="font-medium text-foreground">Суммарно: {formatKm(traceMapData.distance.total)}</span>
+                    <span>{t('traceroute.forward')}: {formatKm(traceMapData.distance.forward)}</span>
+                    <span>{t('traceroute.back')}: {traceMapData.distance.back ? formatKm(traceMapData.distance.back) : '—'}</span>
+                    <span className="font-medium text-foreground">{t('traceroute.total')}: {formatKm(traceMapData.distance.total)}</span>
                   </div>
                   <div className="text-xs text-muted-foreground space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="inline-flex items-center gap-1">
-                        <span className="inline-block w-3 h-1.5 bg-blue-600 rounded-sm" /> прямой маршрут
+                        <span className="inline-block w-3 h-1.5 bg-blue-600 rounded-sm" /> {t('traceroute.routeLabels.forward')}
                       </span>
                       <span className="inline-flex items-center gap-1">
-                        <span className="inline-block w-3 h-1.5 bg-green-600 rounded-sm border border-border" /> обратный маршрут
+                        <span className="inline-block w-3 h-1.5 bg-green-600 rounded-sm border border-border" /> {t('traceroute.routeLabels.back')}
                       </span>
                       {traceMapData.segments.some((s) => s.approximate) && (
                         <span className="inline-flex items-center gap-1">
-                          <span className="inline-block w-3 h-1.5 bg-slate-400 rounded-sm border border-border" /> участок с неизвестными хопами
+                          <span className="inline-block w-3 h-1.5 bg-slate-400 rounded-sm border border-border" /> {t('traceroute.routeLabels.unknown')}
                         </span>
                       )}
                       <span className="inline-flex items-center gap-1">
-                        <span className="inline-block w-3 h-3 rounded-full bg-blue-600" /> начало
+                        <span className="inline-block w-3 h-3 rounded-full bg-blue-600" /> {t('traceroute.routeLabels.start')}
                       </span>
                       <span className="inline-flex items-center gap-1">
-                        <span className="inline-block w-3 h-3 rounded-full bg-green-600" /> цель
+                        <span className="inline-block w-3 h-3 rounded-full bg-green-600" /> {t('traceroute.routeLabels.goal')}
                       </span>
                       <span className="inline-flex items-center gap-1">
                         <span className="inline-block w-3 h-3 rounded-full bg-amber-500" /> hop
@@ -1270,7 +1270,7 @@ export function NodeInfoPanel() {
                     <div className="bg-card border border-border/60 rounded-lg divide-y divide-border/60">
                       <div className="px-3 py-2 font-semibold flex items-center gap-2">
                         <span className="inline-block w-3 h-1.5 bg-blue-600 rounded-sm" />
-                        Прямой маршрут
+                        {t('traceroute.forwardRoute')}
                       </div>
                       {traceMapData.pointsForward.map((p, idx) => (
                         <div
@@ -1300,7 +1300,7 @@ export function NodeInfoPanel() {
                             {p.hasCoords ? (
                               `${formatCoord(p.lat, 4)}, ${formatCoord(p.lon, 4)}`
                             ) : (
-                              <span className="text-amber-600">нет координат</span>
+                              <span className="text-amber-600">{t('traceroute.noCoords')}</span>
                             )}
                           </div>
                         </div>
@@ -1310,7 +1310,7 @@ export function NodeInfoPanel() {
                     <div className="bg-card border border-border/60 rounded-lg divide-y divide-border/60">
                       <div className="px-3 py-2 font-semibold flex items-center gap-2">
                         <span className="inline-block w-3 h-1.5 bg-green-600 rounded-sm" />
-                        Обратный маршрут
+                        {t('traceroute.backRoute')}
                       </div>
                       {traceMapData.pointsBack.map((p, idx) => (
                         <div
@@ -1340,7 +1340,7 @@ export function NodeInfoPanel() {
                             {p.hasCoords ? (
                               `${formatCoord(p.lat, 4)}, ${formatCoord(p.lon, 4)}`
                             ) : (
-                              <span className="text-amber-600">нет координат</span>
+                              <span className="text-amber-600">{t('traceroute.noCoords')}</span>
                             )}
                           </div>
                         </div>
@@ -1473,7 +1473,7 @@ export function NodeInfoPanel() {
                                   <div className="text-right text-[11px] text-muted-foreground">
                                     {p.hasCoords
                                       ? `${formatCoord(p.lat, 4)}, ${formatCoord(p.lon, 4)}`
-                                      : <span className="text-amber-600">нет координат</span>}
+                                      : <span className="text-amber-600">{t('traceroute.noCoords')}</span>}
                                   </div>
                                 </div>
                               ))}
@@ -1513,7 +1513,7 @@ export function NodeInfoPanel() {
                                   <div className="text-right text-[11px] text-muted-foreground">
                                     {p.hasCoords
                                       ? `${formatCoord(p.lat, 4)}, ${formatCoord(p.lon, 4)}`
-                                      : <span className="text-amber-600">нет координат</span>}
+                                      : <span className="text-amber-600">{t('traceroute.noCoords')}</span>}
                                   </div>
                                 </div>
                               ))}

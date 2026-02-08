@@ -11,7 +11,8 @@
         "waitTraceroute": "Ожидание ответа трассировки...",
         "timeoutTraceroute": "Ответ не получен (таймаут 60с)",
         "offlineWarning": "Узел может быть не в сети или недоступен",
-        "mapOSM": "Источник карты: OpenStreetMap (raster tiles, без API-ключей)"
+        "mapOSM": "Источник карты: OpenStreetMap (raster tiles, без API-ключей)",
+        "newMessages": "Новые сообщения"
     },
     "sidebar": {
         "search": "Поиск...",
@@ -81,7 +82,9 @@
         "distance": {
             "km": "{{value}} км",
             "m": "{{value}} м"
-        }
+        },
+        "addToFavorites": "Добавить в избранное",
+        "removeFromFavorites": "Удалить из избранного"
     },
     "networkOverview": {
         "map": "Карта сети",
@@ -111,8 +114,8 @@
         "noCoordsMap": "Нет координат для отображения маршрута на карте, но список хопов ниже.",
         "noCoordsSkip": "Некоторые узлы не прислали координаты — маршрут показан с пропусками.",
         "messageRoute": "Маршрут сообщения",
-        "forwardLabel": "Туда (Forward)",
-        "backLabel": "Обратно (Back)",
+        "forwardLabel": "Туда",
+        "backLabel": "Обратно",
         "routeLabels": {
             "start": "начало",
             "goal": "цель",

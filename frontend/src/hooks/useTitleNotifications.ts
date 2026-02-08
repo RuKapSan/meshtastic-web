@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useMeshStore } from '@/store'
 
 export function useTitleNotifications() {
   const unreadCount = useMeshStore((s) => s.unreadCount)
+  const { t } = useTranslation()
   const originalTitleRef = useRef<string>()
   const blinkIntervalRef = useRef<number | null>(null)
 
@@ -27,7 +29,7 @@ export function useTitleNotifications() {
 
     const startBlink = () => {
       const original = originalTitleRef.current || 'Meshtastic'
-      const alertTitle = `(${unreadCount}) Новые сообщения`
+      const alertTitle = `(${unreadCount}) ${t('common.newMessages')}`
       let showAlert = false
 
       clearBlink()
@@ -69,5 +71,5 @@ export function useTitleNotifications() {
       window.removeEventListener('focus', handleFocus)
       window.removeEventListener('blur', handleBlur)
     }
-  }, [unreadCount])
+  }, [unreadCount, t])
 }

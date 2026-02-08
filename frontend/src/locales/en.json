@@ -11,7 +11,8 @@
         "waitTraceroute": "Waiting for traceroute response...",
         "timeoutTraceroute": "No response received (timeout after 60s)",
         "offlineWarning": "Node may be offline or unreachable",
-        "mapOSM": "Map Source: OpenStreetMap (raster tiles, no API keys required)"
+        "mapOSM": "Map Source: OpenStreetMap (raster tiles, no API keys required)",
+        "newMessages": "New messages"
     },
     "sidebar": {
         "search": "Search...",
@@ -81,7 +82,9 @@
         "distance": {
             "km": "{{value}} km",
             "m": "{{value}} m"
-        }
+        },
+        "addToFavorites": "Add to favorites",
+        "removeFromFavorites": "Remove from favorites"
     },
     "networkOverview": {
         "map": "Network Map",
